@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIT Projects Portal</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background: #f7f9fc;
+            transition: 0.3s;
+        }
+
+        .dark-mode {
+            background: #1e1e1e;
+            color: white;
+        }
+
+        .project-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .card {
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+        <span class="navbar-brand fw-bold">VIT Projects Portal</span>
+
+        <div class="ms-auto d-flex">
+            <input type="text" id="searchInput" class="form-control me-3" placeholder="Search All Projects…">
+            <button class="btn btn-light" id="toggleDark">🌙 Dark Mode</button>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+
+        <!-- ORIGINAL CATEGORY PILLS -->
+        <ul class="nav nav-pills justify-content-center mb-4" id="vitTabs">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#dashboard">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#sdp">SDP</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#edi">EDI</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#dt">DT</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#courseProj">Course Projects</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="pill" href="#myProjects">My Projects</a></li>
+        </ul>
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content">
+
+            <!-- 📌 DASHBOARD: SHOW ALL PROJECTS -->
+            <div id="dashboard" class="tab-pane fade show active">
+                <h3 class="fw-bold text-center mb-4">All Projects Dashboard</h3>
+
+                <!-- Category Filter -->
+                <div class="d-flex justify-content-center mb-3">
+                    <select id="dashboardFilter" class="form-select w-25">
+                        <option value="all">All Categories</option>
+                        <option value="SDP">SDP</option>
+                        <option value="EDI">EDI</option>
+                        <option value="DT">DT</option>
+                        <option value="Course">Course Project</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="row" id="dashboardList"></div>
+            </div>
+
+            <!-- INDIVIDUAL CATEGORY TABS -->
+            <div id="sdp" class="tab-pane fade"><div class="row" id="sdpList"></div></div>
+            <div id="edi" class="tab-pane fade"><div class="row" id="ediList"></div></div>
+            <div id="dt" class="tab-pane fade"><div class="row" id="dtList"></div></div>
+            <div id="courseProj" class="tab-pane fade"><div class="row" id="courseList"></div></div>
+
+            <!-- 📌 MY PROJECTS (Add + Edit + Delete) -->
+            <div id="myProjects" class="tab-pane fade">
+
+                <h3 class="fw-bold text-center mb-4">Add New Project</h3>
+
+                <div class="card p-4 shadow-sm mb-4">
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+                            <input type="text" id="projTitle" class="form-control" placeholder="Project Title">
+                        </div>
+
+                        <div class="col-md-4">
+                            <select id="projCategory" class="form-select">
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="SDP">SDP</option>
+                                <option value="EDI">EDI</option>
+                                <option value="DT">DT</option>
+                                <option value="Course">Course Project</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" id="projImage" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="col-md-12">
+                            <textarea id="projDesc" class="form-control" rows="3"
+                                placeholder="Write a descriptive, detailed explanation…"></textarea>
+                        </div>
+
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-success px-4" id="addProject">➕ Add Project</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="fw-bold text-center">My Added Projects</h3>
+                <div id="userProjectList" class="row"></div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+
+        // ---------------------- DARK MODE ----------------------
+        $("#toggleDark").click(() => {
+            $("body").toggleClass("dark-mode");
+            $("#toggleDark").text($("body").hasClass("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode");
+        });
+
+
+        // ---------------------- LOAD PROJECTS INTO TABS ----------------------
+        function loadProjects() {
+            let projects = JSON.parse(localStorage.getItem("vitProjects") || "[]");
+            let searchText = $("#searchInput").val().toLowerCase();
+            let dashFilter = $("#dashboardFilter").val();
+
+            // Empty all lists before loading
+            $("#dashboardList, #sdpList, #ediList, #dtList, #courseList, #userProjectList").empty();
+
+            projects.forEach((p, index) => {
+
+                // Search + Filter logic for Dashboard
+                let isSearchMatch =
+                    p.title.toLowerCase().includes(searchText) ||
+                    p.desc.toLowerCase().includes(searchText);
+
+                let isFilterMatch = dashFilter === "all" || dashFilter === p.category;
+
+                // Create card HTML
+                let card = `
+                <div class="col-md-4">
+                    <div class="card p-3 shadow-sm">
+                        <img src="${p.img}" class="project-img">
+                        <h5 class="fw-bold mt-2 editable-title" contenteditable="true" data-id="${index}">${p.title}</h5>
+                        <span class="badge bg-primary mb-2">${p.category}</span>
+                        <p class="editable-desc" contenteditable="true" data-id="${index}">${p.desc}</p>
+                        <button class="btn btn-danger deleteProject mt-2" data-id="${index}">
+                            <i class="fa fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>`;
+
+                // Append to Dashboard (all projects)
+                if (isSearchMatch && isFilterMatch) {
+                    $("#dashboardList").append(card);
+                }
+
+                // Append to individual category tabs
+                if (p.category === "SDP") $("#sdpList").append(card);
+                if (p.category === "EDI") $("#ediList").append(card);
+                if (p.category === "DT") $("#dtList").append(card);
+                if (p.category === "Course") $("#courseList").append(card);
+
+                // For "My Projects" tab
+                $("#userProjectList").append(card);
+            });
+        }
+
+
+        // ---------------------- ADD PROJECT ----------------------
+        $("#addProject").click(function () {
+            let title = $("#projTitle").val().trim();
+            let desc = $("#projDesc").val().trim();
+            let category = $("#projCategory").val();
+            let imageFile = $("#projImage")[0].files[0];
+
+            if (!title || !desc || !category) return alert("All fields are required.");
+            if (!imageFile) return alert("Please upload an image.");
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+
+                let projects = JSON.parse(localStorage.getItem("vitProjects") || "[]");
+
+                projects.push({
+                    title,
+                    desc,
+                    category,
+                    img: e.target.result
+                });
+
+                localStorage.setItem("vitProjects", JSON.stringify(projects));
+
+                $("#projTitle, #projDesc, #projCategory").val("");
+                $("#projImage").val("");
+
+                loadProjects();
+            };
+
+            reader.readAsDataURL(imageFile);
+        });
+
+
+        // ---------------------- DELETE PROJECT ----------------------
+        $(document).on("click", ".deleteProject", function () {
+            let id = $(this).data("id");
+            let projects = JSON.parse(localStorage.getItem("vitProjects") || "[]");
+
+            projects.splice(id, 1);
+            localStorage.setItem("vitProjects", JSON.stringify(projects));
+
+            loadProjects();
+        });
+
+
+        // ---------------------- AUTO-SAVE EDITS ----------------------
+        $(document).on("input", ".editable-title, .editable-desc", function () {
+            let id = $(this).data("id");
+            let projects = JSON.parse(localStorage.getItem("vitProjects") || "[]");
+
+            if ($(this).hasClass("editable-title")) {
+                projects[id].title = $(this).text();
+            } else {
+                projects[id].desc = $(this).text();
+            }
+
+            localStorage.setItem("vitProjects", JSON.stringify(projects));
+        });
+
+
+        // ---------------------- SEARCH + FILTER ----------------------
+        $("#searchInput, #dashboardFilter").on("input change", loadProjects);
+
+
+        // Initial Load
+        loadProjects();
+    </script>
+
+</body>
+
+</html>
