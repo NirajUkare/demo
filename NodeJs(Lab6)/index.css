@@ -1,0 +1,108 @@
+:root{
+  --bg:#f6f7fb;
+  --accent:#2b6cb0;
+  --muted:#6b7280;
+  --card:#ffffff;
+  --radius:12px;
+  --container:1100px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+body{background:var(--bg);color:#111;line-height:1.4}
+.container{max-width:var(--container);margin:0 auto;padding:28px}
+.container-grid{display:grid;gap:20px;grid-template-columns:1fr 1fr;align-items:center}
+.nav{background:linear-gradient(90deg,#0b57a4, #2b6cb0);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:700;font-size:1.25rem;color:#fff;text-decoration:none}
+.nav-right{display:flex;gap:12px;align-items:center}
+.nav-link{color:#e6f0ff;text-decoration:none;padding:8px 10px;border-radius:8px}
+.nav-link:hover{background:rgba(255,255,255,0.06)}
+.cta{background:#fff;color:var(--accent);padding:8px 12px;border-radius:8px}
+.nav-user{color:#e1f0ff;margin-right:6px}
+.nav-logout{background:transparent;border:1px solid rgba(255,255,255,0.18);color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer}
+.hero{padding:40px 0}
+.hero-inner{grid-template-columns:1fr 1fr}
+.hero-text h1{font-size:2rem;margin-bottom:10px}
+.hero-text p{color:var(--muted);margin-bottom:16px}
+.hero-actions{display:flex;gap:12px}
+.btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;border:none;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(43,108,176,0.16)}
+.deals{margin-top:28px;grid-template-columns:repeat(3,1fr);padding:18px;background:transparent}
+.deal{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85));padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.04)}
+.hero-image img{width:100%;height:320px;object-fit:cover;border-radius:12px}
+.catalogue-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.search-row{display:flex;gap:8px}
+.search{padding:10px 12px;border-radius:10px;border:1px solid #e6e9ef;min-width:220px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:12px}
+.card{background:var(--card);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(16,24,40,0.04)}
+.card-media img{width:100%;height:320px;object-fit:cover}
+.card-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+.card-title{font-size:1.05rem}
+.card-author{color:var(--muted);font-size:0.9rem}
+.card-desc{color:#374151;font-size:0.9rem;min-height:36px}
+.card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.price{font-weight:700}
+.small{padding:6px 8px;border-radius:8px;background:var(--accent);color:#fff;border:none}
+.auth-container{display:flex;justify-content:center;padding:32px}
+.auth-card{width:100%;max-width:420px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.04);display:flex;flex-direction:column;gap:12px}
+.auth-card h2{text-align:center}
+.auth-card input{padding:12px;border-radius:10px;border:1px solid #e6e9ef}
+.loading{padding:20px;text-align:center;color:var(--muted)}
+.empty{padding:20px;text-align:center;color:var(--muted)}
+.footer{padding:18px;text-align:center;color:var(--muted);background:transparent;margin-top:28px}
+@media(max-width:900px){.container-grid{grid-template-columns:1fr}.hero-image img{height:220px}.deals{grid-template-columns:1fr}.nav-right{gap:8px}}
+.section{margin:28px 0;padding:8px 0}
+.section-header{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}
+.section-header h2{margin:0;font-size:1.25rem}
+.view-all{font-size:0.9rem;color:var(--muted);text-decoration:none}
+.row-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+/* Card sizing + layout fixes to prevent cards from stretching */
+.row-cards,
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  justify-items: center; /* keep cards centered in their grid cell */
+}
+
+/* Constrain each card so it never becomes full-screen wide */
+.card {
+  width: 100%;
+  max-width: 280px;      /* card max width */
+  min-width: 200px;      /* optional: don't get too small on tiny screens */
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+}
+
+/* Keep image fixed aspect and non-stretching */
+.card-media {
+  width: 100%;
+  height: 360px;         /* fixed image container height */
+  overflow: hidden;
+}
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* preserve cover, no distortion */
+  display: block;
+  transition: transform 200ms ease; /* gentle hover if desired */
+}
+
+/* Optional subtle hover that won't break layout */
+.card:hover .card-media img {
+  transform: scale(1.02);
+}
+
+/* Ensure catalog grid / single-item view looks centered */
+.section .row-cards,
+.container .grid {
+  align-items: start;
+  justify-content: center;
+}
+
+/* Make sure catalogue page retains full responsive behavior */
+@media (max-width: 520px) {
+  .card { max-width: 100%; min-width: 0; }
+  .card-media { height: 280px; }
+}
